@@ -1,6 +1,15 @@
 #!/bin/bash
 set -e
 
+# تحميل متغيرات البيئة لضمان استخدام الأسماء العامة
+if [ -f .env ]; then
+    export $(cat .env | grep -v '^#' | xargs)
+fi
+
+DB_USER="${POSTGRES_USER:-app_user}"
+DB_NAME="${POSTGRES_DB:-app_db}"
+DB_PASSWORD="${POSTGRES_PASSWORD:-YourSecurePassword123}"
+
 BACKUP_DIR="./backups"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 DEST_DIR="$BACKUP_DIR/backup_$TIMESTAMP"
@@ -12,7 +21,7 @@ echo "[*] Starting backup process..."
 # 1. Backup PostgreSQL Database
 if docker compose ps --services --filter "status=running" | grep -q "postgres"; then
     echo "[+] Backing up PostgreSQL database..."
-    docker compose exec -T -e PGPASSWORD="BarqLabOnly_7qN2vK8c" postgres pg_dump -h localhost -U barq_app -d barq_tasks > "$DEST_DIR/database.sql"
+    docker compose exec -T -e PGPASSWORD="$DB_PASSWORD" postgres pg_dump -h localhost -U "$DB_USER" -d "$DB_NAME" > "$DEST_DIR/database.sql"
 else
     echo "[-] Database container is not running!"
 fi
