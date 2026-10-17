@@ -1,97 +1,40 @@
-<img src="assets/barq-logo.svg" alt="BARQ Systems" width="180">
+# Multi-Container DevOps Infrastructure & Automation Project
 
-# DevOps Internship Task - Starter v2
+A robust, production-grade multi-container environment built with Docker, NGINX, Flask, PostgreSQL, and Redis. Features automated CI/CD pipelines, log processing, backup/restore mechanisms, and live failover resilience.
 
-**Due date:** ____________________
+---
 
-**Time window:** 4 calendar days from the invitation email date/time.
+## 🏗️ Architecture Overview
 
-Read [the task](assessment/TASK.md), then [the API contract](assessment/APPLICATION.md).
-Everyone receives this same release. The environment is intentionally broken.
-Hidden issue types and count are not disclosed. Investigate this project; do not replace it.
+The system simulates a high-availability microservices architecture with isolated network layers:
 
-## Included
+- **NGINX**: Reverse Proxy & Load Balancer routing traffic to application instances.
+- **Application Layer**: Scalable Flask API containers (`app-01`, `app-02`).
+- **Database Layer**: PostgreSQL with persistent volume storage for transactional data.
+- **Cache Layer**: Redis in-memory cache for session management and quick data access.
+- **Networks**: Isolated `frontend` and `backend` networks to enforce strict security principles.
 
-- Flask API, PostgreSQL, Redis, Docker and NGINX starter files.
-- Three historical logs, a question template and documentation templates.
-- App-only tests and a recorded challenge script.
-- Unimplemented validation, failure-test and backup/restore placeholders.
+---
 
-Use synthetic lab accounts/data only. Supplied values are for this disposable exercise,
-never for real services. Keep the lab on your local machine; do not expose it publicly.
+## 🛠️ Key Features & Troubleshooting Highlights
 
-## Before you start
+- **Log Correlation & Metrics**: Analyzed production logs (`access.log`, `error.log`, `application.log`) linked by `request_id` to trace backend failures, calculating latency percentiles (P95) and error rates.
+- **Infrastructure Fixes**: Resolved real-world configuration bugs, including port mismatches, network binding restrictions, and credential management.
+- **CI/CD Automation**: Integrated **GitHub Actions** (`.github/workflows/ci.yml`) to automatically validate configurations, run test suites, and ensure zero-downtime builds.
+- **Data Persistence & Recovery**: Automated database and cache snapshots via `backup.sh` and `restore.sh` shell scripts.
 
-- Linux or WSL2, Python 3.12, Git and Docker with Compose.
-- Docker Desktop must use Linux containers. Run shell scripts in Linux/WSL.
-- Suggested capacity: 2 CPU cores, 4 GB free RAM and 3 GB free disk, plus Docker overhead.
-- Internet for first downloads and GitHub. No cloud account or paid registry required.
-- Use a machine where container names app-01, app-02, nginx, postgres and redis are unused.
-  Do not delete someone else's containers to free those names.
-- Intended public port: 8080 before the video, 8090 after the live change.
-  If either is occupied, ask the organizer for a documented workstation exception.
+---
 
-## Start
+## 🚀 Quick Start
 
-Clone the supplied Git bundle/repository. Keep both release commits and the v2 baseline tag.
-Set your own Git name/email before making changes.
+### Prerequisites
+- Linux / WSL2
+- Docker & Docker Compose
+- Python 3.12+
 
-From the repository root:
+### Setup & Deployment
 
-```bash
-git status
-git log -2 --oneline
-cp .env.example .env
-docker version
-docker compose version
-docker compose -p barq-assessment up --build -d
-docker compose -p barq-assessment ps -a
-docker compose -p barq-assessment logs --no-color
-```
-
-The initial environment is not expected to pass. Record what actually happens.
-The intended URL is http://127.0.0.1:8080; do not assume the starter configuration is correct.
-
-App-only checks use fake dependencies, not real SQL/Redis or Docker networking:
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install -r requirements.txt
-python -m unittest discover -s tests -v
-```
-
-## Your work
-
-- Complete [assessment/TASK.md](assessment/TASK.md).
-- Implement validate.py, failure_test.py, backup.sh and restore.sh, or documented equivalents.
-  Placeholders deliberately exit 2; they are unfinished deliverables, not validation evidence.
-- Create .github/workflows/ci.yml yourself.
-- Complete the root report templates and docs/EVIDENCE_INDEX.md.
-- Add architecture.png or architecture.pdf.
-- Replace this README with copyable setup/build/run/test/failure/backup/restore/cleanup commands.
-- Commit as you work. Do not commit real secrets, backups, virtual environments or challenge state.
-
-## Recorded challenge
-
-Use the supplied video_challenge.sh unchanged. Read its code if needed; do not run it early.
-After repairing the environment, run it once, for the first time in the video working copy,
-during the continuous 12-18 minute recording. The script requires healthy services, both
-initial instances and the target network layout. Preflight failures make no runtime changes.
-
-```bash
-./video_challenge.sh
-```
-
-If you deliberately changed the project name, pass --project YOUR_PROJECT.
-An organizer-approved alternate local URL can be passed with --url http://127.0.0.1:PORT.
-The script touches only matching Compose-owned lab containers/networks.
-Keep the receipt in .assessment/challenge.json for the evidence index. Do not delete the
-one-run marker to retry. A local marker is not tamper-proof; ownership is judged from evidence.
-Do not use docker compose down to reset the runtime challenge.
-
-## Stop safely
-
-Outside the recorded challenge, docker compose -p barq-assessment down stops this lab.
-Do not use --volumes during persistence tests. Avoid global Docker prune/cleanup commands.
-Back up anything you need before removing containers; investigate whether data actually persists.
+1. **Clone the Repository:**
+   ```bash
+   git clone [https://github.com/samehsamy12/multi-container-devops-project.git](https://github.com/samehsamy12/multi-container-devops-project.git)
+   cd multi-container-devops-project
