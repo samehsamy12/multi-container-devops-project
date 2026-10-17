@@ -1,6 +1,15 @@
 #!/bin/bash
 set -e
 
+# تحميل متغيرات البيئة لو موجودة لضمان استخدام الأسماء العامة
+if [ -f .env ]; then
+    export $(cat .env | grep -v '^#' | xargs)
+fi
+
+DB_USER="${POSTGRES_USER:-app_user}"
+DB_NAME="${POSTGRES_DB:-app_db}"
+DB_PASSWORD="${POSTGRES_PASSWORD:-YourSecurePassword123}"
+
 if [ -z "$1" ]; then
     echo "[-] Error: Please specify the backup archive file to restore."
     echo "Usage: ./restore.sh ./backups/backup_TIMESTAMP.tar.gz"
@@ -28,8 +37,8 @@ echo "[*] Starting restore process..."
 if [ -f "$EXTRACTED_DIR/database.sql" ]; then
     if docker compose ps --services --filter "status=running" | grep -q "postgres"; then
         echo "[+] Resetting and restoring PostgreSQL database..."
-        docker compose exec -T -e PGPASSWORD="BarqLabOnly_7qN2vK8c" postgres psql -h localhost -U barq_app -d barq_tasks -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
-        docker compose exec -T -e PGPASSWORD="BarqLabOnly_7qN2vK8c" postgres psql -h localhost -U barq_app -d barq_tasks < "$EXTRACTED_DIR/database.sql"
+        docker compose exec -T -e PGPASSWORD="$DB_PASSWORD" postgres psql -h localhost -U "$DB_USER" -d "$DB_NAME" -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
+        docker compose exec -T -e PGPASSWORD="$DB_PASSWORD" postgres psql -h localhost -U "$DB_USER" -d "$DB_NAME" < "$EXTRACTED_DIR/database.sql"
     else
         echo "[-] Database container is not running!"
     fi
